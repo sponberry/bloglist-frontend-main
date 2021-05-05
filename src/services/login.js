@@ -6,4 +6,8 @@ const login = async credentials => {
   return response.data
 }
 
-export default { login } //eslint-disable-line import/no-anonymous-default-export
+const logout = () => {
+  window.localStorage.clear()
+}
+
+export default { login, logout } //eslint-disable-line import/no-anonymous-default-export
