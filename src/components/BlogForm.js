@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import blogService from "../services/blogs"
 
-const BlogForm = ({ blogs, setBlogs }) => {
+const BlogForm = ({ blogs, setBlogs, errorMessage, setErrorMessage }) => {
   const [newTitle, setNewTitle] = useState("")
   const [newAuthor, setNewAuthor] = useState("")
   const [newUrl, setNewUrl] = useState("")
@@ -19,9 +19,16 @@ const BlogForm = ({ blogs, setBlogs }) => {
       setNewTitle("")
       setNewAuthor("")
       setNewUrl("")
+      setErrorMessage(`Success! Added new blog: ${newBlog.title} by ${newBlog.author}`)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
       return response.data
     } catch (exception) {
-      console.log("an error occurred", exception)
+      setErrorMessage("Error: Unauthorized user token")
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 

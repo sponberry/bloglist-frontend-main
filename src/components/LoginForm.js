@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import loginService from '../services/login'
 import blogService from "../services/blogs"
 
-const LoginForm = ({ user, setUser }) => {
+const LoginForm = ({ user, setUser, errorMessage, setErrorMessage }) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
@@ -20,7 +20,10 @@ const LoginForm = ({ user, setUser }) => {
       setPassword("")
       setUsername("")
     } catch (exception) {
-      console.log("wrong credentials")
+      setErrorMessage("Error: wrong credentials")
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 

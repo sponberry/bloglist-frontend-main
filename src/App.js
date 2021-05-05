@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from "./components/LoginForm"
 import BlogForm from "./components/BlogForm"
+import ErrorMessage from "./components/ErrorMessage"
 import blogService from './services/blogs'
 import loginService from './services/login'
+
+import "./styles/app.css"
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -30,11 +34,16 @@ const App = () => {
 
   return (
     <div>
-      
+      {errorMessage !== null
+        ? <ErrorMessage message={errorMessage} />
+        : <div></div>
+      }
       {user === null
         ? <LoginForm
             user={user}
             setUser={(user) => setUser(user)}
+            errorMessage={errorMessage}
+            setErrorMessage={(errorMessage) => setErrorMessage(errorMessage)}
           />
         : <div>
             <h2>blogs</h2>
@@ -48,6 +57,8 @@ const App = () => {
             <BlogForm 
               blogs={blogs}
               setBlogs={(blogs) => setBlogs(blogs)}
+              errorMessage={errorMessage}
+              setErrorMessage={(errorMessage) => setErrorMessage(errorMessage)}
             />
           </div>
       }
