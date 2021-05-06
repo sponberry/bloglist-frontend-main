@@ -1,35 +1,20 @@
 import React, { useState } from "react"
-import blogService from "../services/blogs"
 
-const BlogForm = ({ blogs, setBlogs, errorMessage, setErrorMessage }) => {
+const BlogForm = ({ newBlog }) => {
   const [newTitle, setNewTitle] = useState("")
   const [newAuthor, setNewAuthor] = useState("")
   const [newUrl, setNewUrl] = useState("")
 
-  const createBlog = async event => {
+  const createBlog = event => {
     event.preventDefault()
-    try {
-      const newBlog = {
-        title: newTitle,
-        author: newAuthor,
-        url: newUrl
-      }
-      const response = blogService.create(newBlog)
-      setBlogs(blogs.concat(newBlog))
-      setNewTitle("")
-      setNewAuthor("")
-      setNewUrl("")
-      setErrorMessage(`Success! Added new blog: ${newBlog.title} by ${newBlog.author}`)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-      return response.data
-    } catch (exception) {
-      setErrorMessage("Error: Unauthorized user token")
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
+    newBlog({
+      title: newTitle,
+      author: newAuthor,
+      url: newUrl
+    })
+    setNewTitle("")
+    setNewAuthor("")
+    setNewUrl("")
   }
 
   return (

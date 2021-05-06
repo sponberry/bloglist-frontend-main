@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from "./components/LoginForm"
 import BlogForm from "./components/BlogForm"
 import ErrorMessage from "./components/ErrorMessage"
+import Togglable from "./components/Togglable"
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -32,6 +33,25 @@ const App = () => {
     loginService.logout()
   }
 
+  const newBlog = async (blogObject) => {
+    blogFormRef.current.toggleVisibility()
+    try {
+      const newBlog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(newBlog))
+      setErrorMessage(`Success! Added new blog: ${newBlog.title} by ${newBlog.author}`)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    } catch (exception) {
+      setErrorMessage("Error: Unauthorized user token")
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
+  const blogFormRef = useRef()
+
   return (
     <div>
       {errorMessage !== null
@@ -54,12 +74,9 @@ const App = () => {
             {blogs.map(blog =>
               <Blog key={blog.id} blog={blog} />
             )}
-            <BlogForm 
-              blogs={blogs}
-              setBlogs={(blogs) => setBlogs(blogs)}
-              errorMessage={errorMessage}
-              setErrorMessage={(errorMessage) => setErrorMessage(errorMessage)}
-            />
+            <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
+              <BlogForm newBlog={newBlog} />
+            </Togglable>
           </div>
       }
     </div>
