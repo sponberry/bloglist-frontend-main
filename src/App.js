@@ -50,6 +50,19 @@ const App = () => {
     }
   }
 
+  const addLike = async (blog) => {
+    const blogToUpdate = {...blog, likes: blog.likes + 1}
+    const updatedBlog = await blogService.updateLikes(blogToUpdate)
+    try {
+      setBlogs(blogs.map(blog => blog.id !== updatedBlog.id ? blog : updatedBlog))
+    } catch (exception) {
+      setErrorMessage(`${blogToUpdate.title} was already removed from server`)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
   const blogFormRef = useRef()
 
   return (
@@ -72,7 +85,7 @@ const App = () => {
               logout
             </button>
             {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} />
+              <Blog key={blog.id} blog={blog} addLike={addLike} />
             )}
             <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
               <BlogForm newBlog={newBlog} />
