@@ -1,8 +1,16 @@
 import React, { useState } from 'react'
+import PropTypes from "prop-types"
 import "../styles/blog.css"
 
 const Blog = ({ blog, addLike, removeBlog, user }) => {
   const [visible, setVisible] = useState(false)
+
+  Blog.propTypes = {
+    blog: PropTypes.object.isRequired,
+    addLike: PropTypes.func.isRequired,
+    removeBlog: PropTypes.func.isRequired,
+    user: PropTypes.object.isRequired
+  }
 
   const toggleVisibility = () => {
     setVisible(!visible)
