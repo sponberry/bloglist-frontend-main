@@ -8,7 +8,7 @@ const Blog = ({ blog, addLike, removeBlog, user }) => {
     setVisible(!visible)
   }
 
-  const deleteStyles = (blogCreatorId) => (
+  const buttonVisibility = (blogCreatorId) => (
     blogCreatorId === user.id 
       ? { display: "" }
       : { display: "none" }
@@ -29,8 +29,7 @@ const Blog = ({ blog, addLike, removeBlog, user }) => {
           </button>
         </p>
         <p>{blog.author}</p>
-        {/* <p>{blog.id}</p> */}
-        <button style={deleteStyles(blog.user.id)} onClick={() => removeBlog(blog.id)}>
+        <button style={buttonVisibility(blog.user.id)} onClick={() => removeBlog(blog)}>
           remove
         </button>
       </div>

@@ -70,16 +70,18 @@ const App = () => {
     }
   }
 
-  const removeBlog = async blogId => {
-    try {
-      await blogService.deleteBlog(blogId)
-      const newBlogList = blogs.filter(blog => blog.id !== blogId)
-      setBlogs(newBlogList)
-      setErrorMessage("Blog deleted successfully!")
-      clearErrorMessage()
-    } catch (exception) {
-      setErrorMessage(`Error: unable to remove blog due to ${exception}`)
-      clearErrorMessage()
+  const removeBlog = async blogToDelete => {
+    if (window.confirm(`Delete ${blogToDelete.title} forever?`)) {
+      try {
+        await blogService.deleteBlog(blogToDelete.id)
+        const newBlogList = blogs.filter(blog => blog.id !== blogToDelete.id)
+        setBlogs(newBlogList)
+        setErrorMessage(`Blog ${blogToDelete.title} deleted successfully!`)
+        clearErrorMessage()
+      } catch (exception) {
+        setErrorMessage(`Error: unable to remove blog due to ${exception}`)
+        clearErrorMessage()
+      }
     }
   }
 
