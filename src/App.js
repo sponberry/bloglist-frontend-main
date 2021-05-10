@@ -15,9 +15,12 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    async function fetchAll() {
+      let blogs = await blogService.getAll()
+      blogs.sort((a, b) => b.likes - a.likes)
       setBlogs( blogs )
-    )  
+    }
+    fetchAll()
   }, [])
 
   useEffect(() => {
