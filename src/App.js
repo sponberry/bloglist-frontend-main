@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+import React, { useState, useEffect, useRef } from "react"
+import Blog from "./components/Blog"
 import LoginForm from "./components/LoginForm"
 import BlogForm from "./components/BlogForm"
 import ErrorMessage from "./components/ErrorMessage"
 import Togglable from "./components/Togglable"
-import blogService from './services/blogs'
-import loginService from './services/login'
+import blogService from "./services/blogs"
+import loginService from "./services/login"
 
 import "./styles/app.css"
 
@@ -60,7 +60,7 @@ const App = () => {
   }
 
   const addLike = async (blog) => {
-    const blogToUpdate = {...blog, likes: blog.likes + 1}
+    const blogToUpdate = { ...blog, likes: blog.likes + 1 }
     const updatedBlog = await blogService.updateLikes(blogToUpdate)
     try {
       setBlogs(blogs.map(blog => blog.id !== updatedBlog.id ? blog : updatedBlog))
@@ -95,24 +95,24 @@ const App = () => {
       }
       {user === null
         ? <LoginForm
-            user={user}
-            setUser={(user) => setUser(user)}
-            errorMessage={errorMessage}
-            setErrorMessage={(errorMessage) => setErrorMessage(errorMessage)}
-          />
+          user={user}
+          setUser={(user) => setUser(user)}
+          errorMessage={errorMessage}
+          setErrorMessage={(errorMessage) => setErrorMessage(errorMessage)}
+        />
         : <div>
-            <h2>blogs</h2>
-            <p>{user.name} logged in</p>
-            <button onClick={handleLogout}>
+          <h2>blogs</h2>
+          <p>{user.name} logged in</p>
+          <button onClick={handleLogout}>
               logout
-            </button>
-            {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} addLike={addLike} removeBlog={removeBlog} user={user} />
-            )}
-            <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
-              <BlogForm newBlog={newBlog} />
-            </Togglable>
-          </div>
+          </button>
+          {blogs.map(blog =>
+            <Blog key={blog.id} blog={blog} addLike={addLike} removeBlog={removeBlog} user={user} />
+          )}
+          <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
+            <BlogForm newBlog={newBlog} />
+          </Togglable>
+        </div>
       }
     </div>
   )
