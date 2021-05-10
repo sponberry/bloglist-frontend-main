@@ -25,8 +25,18 @@ const App = () => {
     if (userJSONData) {
       const user = JSON.parse(userJSONData)
       setUser(user)
+    } else {
+      setUser(null)
+      setErrorMessage("Error: you have been logged out")
+      clearErrorMessage()
     }
   }, [])
+
+  const clearErrorMessage = () => {
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000)
+  }
 
   const handleLogout = () => {
     setUser(null)
@@ -39,14 +49,10 @@ const App = () => {
       const newBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(newBlog))
       setErrorMessage(`Success! Added new blog: ${newBlog.title} by ${newBlog.author}`)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      clearErrorMessage()
     } catch (exception) {
       setErrorMessage("Error: Unauthorized user token")
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      clearErrorMessage()
     }
   }
 
@@ -57,9 +63,20 @@ const App = () => {
       setBlogs(blogs.map(blog => blog.id !== updatedBlog.id ? blog : updatedBlog))
     } catch (exception) {
       setErrorMessage(`${blogToUpdate.title} was already removed from server`)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      clearErrorMessage()
+    }
+  }
+
+  const removeBlog = async blogId => {
+    try {
+      await blogService.deleteBlog(blogId)
+      const newBlogList = blogs.filter(blog => blog.id !== blogId)
+      setBlogs(newBlogList)
+      setErrorMessage("Blog deleted successfully!")
+      clearErrorMessage()
+    } catch (exception) {
+      setErrorMessage(`Error: unable to remove blog due to ${exception}`)
+      clearErrorMessage()
     }
   }
 
@@ -85,7 +102,7 @@ const App = () => {
               logout
             </button>
             {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} addLike={addLike} />
+              <Blog key={blog.id} blog={blog} addLike={addLike} removeBlog={removeBlog} user={user} />
             )}
             <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
               <BlogForm newBlog={newBlog} />

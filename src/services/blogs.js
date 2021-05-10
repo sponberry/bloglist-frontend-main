@@ -12,7 +12,17 @@ const setToken = newToken => {
   token = `bearer ${newToken}`
 }
 
+const checkTokenStatus = () => {
+  console.log("checking token status")
+  if (!token) {
+    window.localStorage.clear()
+    console.log("token is null")
+    return false
+  }
+}
+
 const create = async newObject => {
+  if (!checkTokenStatus) { return }
   const config = {
     headers: { Authorization: token }
   }
@@ -21,9 +31,19 @@ const create = async newObject => {
   return response.data
 }
 
+const deleteBlog = async blogId => {
+  checkTokenStatus()
+  const config = {
+    headers: { Authorization: token }
+  }
+
+  const response = await axios.delete(`${baseUrl}/${blogId}`, config)
+  return response.data
+}
+
 const updateLikes = async blogObject => {
   const response = await axios.put(`${baseUrl}/${blogObject.id}`, blogObject)
   return response.data
 }
 
-export default { getAll, create, setToken, updateLikes } // eslint-disable-line import/no-anonymous-default-export
+export default { getAll, create, setToken, updateLikes, deleteBlog } // eslint-disable-line import/no-anonymous-default-export
