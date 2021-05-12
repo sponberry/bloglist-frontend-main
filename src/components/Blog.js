@@ -29,8 +29,8 @@ const Blog = ({ blog, addLike, removeBlog, user }) => {
           {blog.title}
           <button onClick={toggleVisibility}>close</button>
         </p>
-        <p>{blog.url}</p>
-        <p>
+        <p className="url">{blog.url}</p>
+        <p className="likes">
           {blog.likes}
           <button onClick={() => addLike(blog)}>
             like
@@ -44,7 +44,7 @@ const Blog = ({ blog, addLike, removeBlog, user }) => {
     )
   } else {
     return (
-      <div className="blog">
+      <div className="blog preview">
         {blog.title} {blog.author}
         <button onClick={toggleVisibility}>view</button>
       </div>
