@@ -13,7 +13,7 @@ const ErrorMessage = ({ message }) => {
   const greenClass = {
     "color" : "green"
   }
-// check the first few chars of message for formatting
+
   return(
     <div style={toCheck === "Error" ? redClass : greenClass} className="notification">
       {message}
