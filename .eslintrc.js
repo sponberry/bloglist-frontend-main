@@ -17,7 +17,7 @@ module.exports = {
   },
   "plugins": [
     "react", "jest", 
-    "express"
+    // "express"
   ],
   "rules": {
     "indent": [

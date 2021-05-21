@@ -23,24 +23,51 @@ const App = () => {
     fetchAll()
   }, [])
 
-  useEffect(() => {
+  useEffect(async () => {
+    let mounted = true
     const userJSONData = window.localStorage.getItem("loggedInUser")
-    if (userJSONData) {
+    if (userJSONData && mounted) {
       const user = JSON.parse(userJSONData)
-      setUser(user)
-      blogService.setToken(user.token)
+
+      const response = await loginService.checkLoginData({ username: user.username })
+
+      if (response && response === 200) {
+        setUser(user)
+        blogService.setToken(user.token)
+      } else {
+        setUser(null)
+        loginService.logout()
+        setErrorMessage("Error: you have been logged out")
+        clearErrorMessage()
+      }
     } else {
       setUser(null)
       loginService.logout()
       setErrorMessage("Error: you have been logged out")
       clearErrorMessage()
     }
+
+    return () => mounted = false
   }, [])
 
   const clearErrorMessage = () => {
     setTimeout(() => {
       setErrorMessage(null)
     }, 5000)
+  }
+
+  const idleTimeout = () => {
+    let time
+    window.onload = resetTimer
+
+    document.onmousemove = resetTimer
+    document.onkeypress = resetTimer
+
+    function resetTimer() {
+      clearTimeout(time)
+      // 300000 = 5 mins
+      time = setTimeout(handleLogout, 600000)
+    }
   }
 
   const handleLogout = () => {
@@ -101,6 +128,7 @@ const App = () => {
           setUser={(user) => setUser(user)}
           errorMessage={errorMessage}
           setErrorMessage={(errorMessage) => setErrorMessage(errorMessage)}
+          idleTimeout={idleTimeout}
         />
         : <div>
           <h2>blogs</h2>

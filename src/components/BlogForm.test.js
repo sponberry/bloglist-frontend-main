@@ -10,9 +10,9 @@ test ("<BlogForm /> updates states and calls OnSubmit", () => {
     <BlogForm newBlog={newBlog} />
   )
 
-  const titleInput = component.container.querySelector("#titleEntry")
-  const authorInput = component.container.querySelector("#authorEntry")
-  const urlInput = component.container.querySelector("#urlEntry")
+  const titleInput = component.container.querySelector("#title")
+  const authorInput = component.container.querySelector("#author")
+  const urlInput = component.container.querySelector("#url")
   const form = component.container.querySelector("form")
 
   fireEvent.change(titleInput, { target: { value: "Test blog" } })
