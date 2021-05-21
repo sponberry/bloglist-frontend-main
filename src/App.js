@@ -28,8 +28,10 @@ const App = () => {
     if (userJSONData) {
       const user = JSON.parse(userJSONData)
       setUser(user)
+      blogService.setToken(user.token)
     } else {
       setUser(null)
+      loginService.logout()
       setErrorMessage("Error: you have been logged out")
       clearErrorMessage()
     }

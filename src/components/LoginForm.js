@@ -31,7 +31,7 @@ const LoginForm = ({ setUser, setErrorMessage }) => {
     <form onSubmit={handleLogin}>
       <h2>Log in to application</h2>
       <div>
-        <label id="username">Username</label>
+        <label htmlFor="username">Username</label>
         <input
           type="text"
           id="username"
@@ -41,7 +41,7 @@ const LoginForm = ({ setUser, setErrorMessage }) => {
         />
       </div>
       <div>
-        <label id="password">Password</label>
+        <label htmlFor="password">Password</label>
         <input
           type="password"
           id="password"

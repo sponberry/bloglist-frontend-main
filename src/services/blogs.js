@@ -22,7 +22,7 @@ const checkTokenStatus = () => {
 }
 
 const create = async newObject => {
-  if (!checkTokenStatus) { return }
+  // if (!checkTokenStatus) { return }
   const config = {
     headers: { Authorization: token }
   }
