@@ -1,9 +1,26 @@
 import React, { useState } from "react"
+import { useDispatch } from "react-redux"
+import { messageChange } from "../reducers/notificationReducer"
+import { addNew } from "../reducers/blogReducer"
 
-const BlogForm = ({ newBlog }) => {
+const BlogForm = ({ blogFormRef }) => {
   const [newTitle, setNewTitle] = useState("")
   const [newAuthor, setNewAuthor] = useState("")
   const [newUrl, setNewUrl] = useState("")
+
+  const dispatch = useDispatch()
+
+  const newBlog = async (blogObject) => {
+    blogFormRef.current.toggleVisibility()
+    try {
+      dispatch(addNew(blogObject))
+      dispatch(
+        messageChange(`Success! Added new blog: ${blogObject.title} by ${blogObject.author}`, 5)
+      )
+    } catch (exception) {
+      dispatch(messageChange("Error: Unauthorized user token", 5))
+    }
+  }
 
   const createBlog = event => {
     event.preventDefault()

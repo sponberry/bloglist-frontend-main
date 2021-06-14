@@ -8,54 +8,50 @@ import blogService from "./services/blogs"
 import loginService from "./services/login"
 import { useDispatch, useSelector } from "react-redux"
 import { messageChange } from "./reducers/notificationReducer"
+import { initializeBlogs, sortBlogs } from "./reducers/blogReducer"
 
 import "./styles/app.css"
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
 
-  let notification = useSelector(state => state)
+  let notification = useSelector(state => state.notification)
+  let blogs = useSelector(state => state.blogs)
   const dispatch = useDispatch()
 
   useEffect(() => {
-    async function fetchAll() {
-      let blogs = await blogService.getAll()
-      blogs.sort((a, b) => b.likes - a.likes)
-      setBlogs( blogs )
-    }
-    fetchAll()
+    dispatch(initializeBlogs())
+    dispatch(sortBlogs())
   }, [])
+
+  const handleLogout = () => {
+    setUser(null)
+    loginService.logout()
+    dispatch(messageChange("You have been logged out", 5))
+  }
 
   useEffect(async () => {
     let mounted = true
     const userJSONData = window.localStorage.getItem("loggedInUser")
     if (userJSONData && mounted) {
       const user = JSON.parse(userJSONData)
-
       const response = await loginService.checkLoginData({ username: user.username })
 
       if (response && response === 200) {
         setUser(user)
         blogService.setToken(user.token)
       } else {
-        setUser(null)
-        loginService.logout()
-        dispatch(messageChange("Error: you have been logged out", 5))
+        handleLogout()
       }
     } else {
-      setUser(null)
-      loginService.logout()
-      dispatch(messageChange("Error: you have been logged out", 5))
+      handleLogout()
     }
-
     return () => mounted = false
   }, [])
 
   const idleTimeout = () => {
     let time
     window.onload = resetTimer
-
     document.onmousemove = resetTimer
     document.onkeypress = resetTimer
 
@@ -66,29 +62,12 @@ const App = () => {
     }
   }
 
-  const handleLogout = () => {
-    setUser(null)
-    loginService.logout()
-  }
-
-  const newBlog = async (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-    try {
-      const newBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(newBlog))
-      dispatch(
-        messageChange(`Success! Added new blog: ${newBlog.title} by ${newBlog.author}`, 5)
-      )
-    } catch (exception) {
-      dispatch(messageChange("Error: Unauthorized user token", 5))
-    }
-  }
-
   const addLike = async (blog) => {
     const blogToUpdate = { ...blog, likes: blog.likes + 1 }
     const updatedBlog = await blogService.updateLikes(blogToUpdate)
     try {
-      setBlogs(blogs.map(blog => blog.id !== updatedBlog.id ? blog : updatedBlog))
+      // setBlogs(blogs.map(blog => blog.id !== updatedBlog.id ? blog : updatedBlog))
+      console.log(updatedBlog)
     } catch (exception) {
       dispatch(
         messageChange(`${blogToUpdate.title} was already removed from server`, 5)
@@ -100,8 +79,8 @@ const App = () => {
     if (window.confirm(`Delete ${blogToDelete.title} forever?`)) {
       try {
         await blogService.deleteBlog(blogToDelete.id)
-        const newBlogList = blogs.filter(blog => blog.id !== blogToDelete.id)
-        setBlogs(newBlogList)
+        //const newBlogList = blogs.filter(blog => blog.id !== blogToDelete.id)
+        // setBlogs(newBlogList)
         dispatch(
           messageChange(`Blog ${blogToDelete.title} deleted successfully!`, 5)
         )
@@ -137,7 +116,7 @@ const App = () => {
             <Blog key={blog.id} blog={blog} addLike={addLike} removeBlog={removeBlog} user={user} />
           )}
           <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
-            <BlogForm newBlog={newBlog} />
+            <BlogForm blogFormRef={blogFormRef} />
           </Togglable>
         </div>
       }
