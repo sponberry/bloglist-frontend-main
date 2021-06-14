@@ -1,10 +1,14 @@
 import React, { useState } from "react"
 import loginService from "../services/login"
 import blogService from "../services/blogs"
+import { useDispatch } from "react-redux"
+import { messageChange, messageClear } from "../reducers/notificationReducer"
 
-const LoginForm = ({ setUser, setErrorMessage, idleTimeout }) => {
+const LoginForm = ({ setUser, idleTimeout }) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+
+  const dispatch = useDispatch()
 
   const handleLogin = async event => {
     event.preventDefault()
@@ -20,13 +24,10 @@ const LoginForm = ({ setUser, setErrorMessage, idleTimeout }) => {
       blogService.setToken(user.token)
       setUser(user)
 
-      setErrorMessage(null)
+      dispatch(messageClear())
       idleTimeout()
     } catch (exception) {
-      setErrorMessage("Error: wrong credentials")
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      dispatch(messageChange("Error: wrong credentials", 5))
     }
   }
 

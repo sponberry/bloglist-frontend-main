@@ -6,13 +6,17 @@ import ErrorMessage from "./components/ErrorMessage"
 import Togglable from "./components/Togglable"
 import blogService from "./services/blogs"
 import loginService from "./services/login"
+import { useDispatch, useSelector } from "react-redux"
+import { messageChange } from "./reducers/notificationReducer"
 
 import "./styles/app.css"
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+
+  let notification = useSelector(state => state)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     async function fetchAll() {
@@ -37,24 +41,16 @@ const App = () => {
       } else {
         setUser(null)
         loginService.logout()
-        setErrorMessage("Error: you have been logged out")
-        clearErrorMessage()
+        dispatch(messageChange("Error: you have been logged out", 5))
       }
     } else {
       setUser(null)
       loginService.logout()
-      setErrorMessage("Error: you have been logged out")
-      clearErrorMessage()
+      dispatch(messageChange("Error: you have been logged out", 5))
     }
 
     return () => mounted = false
   }, [])
-
-  const clearErrorMessage = () => {
-    setTimeout(() => {
-      setErrorMessage(null)
-    }, 5000)
-  }
 
   const idleTimeout = () => {
     let time
@@ -80,11 +76,11 @@ const App = () => {
     try {
       const newBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(newBlog))
-      setErrorMessage(`Success! Added new blog: ${newBlog.title} by ${newBlog.author}`)
-      clearErrorMessage()
+      dispatch(
+        messageChange(`Success! Added new blog: ${newBlog.title} by ${newBlog.author}`, 5)
+      )
     } catch (exception) {
-      setErrorMessage("Error: Unauthorized user token")
-      clearErrorMessage()
+      dispatch(messageChange("Error: Unauthorized user token", 5))
     }
   }
 
@@ -94,8 +90,9 @@ const App = () => {
     try {
       setBlogs(blogs.map(blog => blog.id !== updatedBlog.id ? blog : updatedBlog))
     } catch (exception) {
-      setErrorMessage(`${blogToUpdate.title} was already removed from server`)
-      clearErrorMessage()
+      dispatch(
+        messageChange(`${blogToUpdate.title} was already removed from server`, 5)
+      )
     }
   }
 
@@ -105,11 +102,13 @@ const App = () => {
         await blogService.deleteBlog(blogToDelete.id)
         const newBlogList = blogs.filter(blog => blog.id !== blogToDelete.id)
         setBlogs(newBlogList)
-        setErrorMessage(`Blog ${blogToDelete.title} deleted successfully!`)
-        clearErrorMessage()
+        dispatch(
+          messageChange(`Blog ${blogToDelete.title} deleted successfully!`, 5)
+        )
       } catch (exception) {
-        setErrorMessage(`Error: unable to remove blog due to ${exception}`)
-        clearErrorMessage()
+        dispatch(
+          messageChange(`Error: unable to remove blog due to ${exception}`, 5)
+        )
       }
     }
   }
@@ -118,16 +117,14 @@ const App = () => {
 
   return (
     <div>
-      {errorMessage !== null
-        ? <ErrorMessage message={errorMessage} />
+      {notification !== null
+        ? <ErrorMessage message={notification} />
         : <div></div>
       }
       {user === null
         ? <LoginForm
           user={user}
           setUser={(user) => setUser(user)}
-          errorMessage={errorMessage}
-          setErrorMessage={(errorMessage) => setErrorMessage(errorMessage)}
           idleTimeout={idleTimeout}
         />
         : <div>
