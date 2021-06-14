@@ -62,36 +62,6 @@ const App = () => {
     }
   }
 
-  const addLike = async (blog) => {
-    const blogToUpdate = { ...blog, likes: blog.likes + 1 }
-    const updatedBlog = await blogService.updateLikes(blogToUpdate)
-    try {
-      // setBlogs(blogs.map(blog => blog.id !== updatedBlog.id ? blog : updatedBlog))
-      console.log(updatedBlog)
-    } catch (exception) {
-      dispatch(
-        messageChange(`${blogToUpdate.title} was already removed from server`, 5)
-      )
-    }
-  }
-
-  const removeBlog = async blogToDelete => {
-    if (window.confirm(`Delete ${blogToDelete.title} forever?`)) {
-      try {
-        await blogService.deleteBlog(blogToDelete.id)
-        //const newBlogList = blogs.filter(blog => blog.id !== blogToDelete.id)
-        // setBlogs(newBlogList)
-        dispatch(
-          messageChange(`Blog ${blogToDelete.title} deleted successfully!`, 5)
-        )
-      } catch (exception) {
-        dispatch(
-          messageChange(`Error: unable to remove blog due to ${exception}`, 5)
-        )
-      }
-    }
-  }
-
   const blogFormRef = useRef()
 
   return (
@@ -113,7 +83,7 @@ const App = () => {
               logout
           </button>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} addLike={addLike} removeBlog={removeBlog} user={user} />
+            <Blog key={blog.id} blog={blog} user={user} />
           )}
           <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
             <BlogForm blogFormRef={blogFormRef} />

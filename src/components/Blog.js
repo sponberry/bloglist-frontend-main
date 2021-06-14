@@ -1,15 +1,41 @@
 import React, { useState } from "react"
 import PropTypes from "prop-types"
+import { useDispatch } from "react-redux"
+import { remove, addLike } from "../reducers/blogReducer"
+import { messageChange } from "../reducers/notificationReducer"
+
 import "../styles/blog.css"
 
-const Blog = ({ blog, addLike, removeBlog, user }) => {
+const Blog = ({ blog, user }) => {
   const [visible, setVisible] = useState(false)
 
-  Blog.propTypes = {
-    blog: PropTypes.object.isRequired,
-    addLike: PropTypes.func.isRequired,
-    removeBlog: PropTypes.func.isRequired,
-    user: PropTypes.object.isRequired
+  const dispatch = useDispatch()
+
+  Blog.propTypes = { blog: PropTypes.object.isRequired, user: PropTypes.object.isRequired }
+
+  const likePost = async (blog) => {
+    try {
+      dispatch(addLike(blog))
+    } catch (exception) {
+      dispatch(
+        messageChange(`${blog.title} was already removed from server`, 5)
+      )
+    }
+  }
+
+  const removeBlog = async blogToDelete => {
+    if (window.confirm(`Delete ${blogToDelete.title} forever?`)) {
+      try {
+        dispatch(remove(blogToDelete))
+        dispatch(
+          messageChange(`Blog ${blogToDelete.title} deleted successfully!`, 5)
+        )
+      } catch (exception) {
+        dispatch(
+          messageChange(`Error: unable to remove blog due to ${exception}`, 5)
+        )
+      }
+    }
   }
 
   const toggleVisibility = () => {
@@ -32,7 +58,7 @@ const Blog = ({ blog, addLike, removeBlog, user }) => {
         <p className="url">{blog.url}</p>
         <p className="likes">
           {blog.likes}
-          <button onClick={() => addLike(blog)}>
+          <button onClick={() => likePost(blog)}>
             like
           </button>
         </p>
