@@ -1,22 +1,20 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useEffect, useRef } from "react"
 import Blog from "./components/Blog"
 import LoginForm from "./components/LoginForm"
 import BlogForm from "./components/BlogForm"
 import ErrorMessage from "./components/ErrorMessage"
 import Togglable from "./components/Togglable"
-import blogService from "./services/blogs"
-import loginService from "./services/login"
 import { useDispatch, useSelector } from "react-redux"
 import { messageChange } from "./reducers/notificationReducer"
 import { initializeBlogs, sortBlogs } from "./reducers/blogReducer"
+import { checkLogin, logout } from "./reducers/userReducer"
 
 import "./styles/app.css"
 
 const App = () => {
-  const [user, setUser] = useState(null)
-
   let notification = useSelector(state => state.notification)
   let blogs = useSelector(state => state.blogs)
+  let user = useSelector(state => state.user)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -25,8 +23,7 @@ const App = () => {
   }, [])
 
   const handleLogout = () => {
-    setUser(null)
-    loginService.logout()
+    dispatch(logout())
     dispatch(messageChange("You have been logged out", 5))
   }
 
@@ -35,14 +32,7 @@ const App = () => {
     const userJSONData = window.localStorage.getItem("loggedInUser")
     if (userJSONData && mounted) {
       const user = JSON.parse(userJSONData)
-      const response = await loginService.checkLoginData({ username: user.username })
-
-      if (response && response === 200) {
-        setUser(user)
-        blogService.setToken(user.token)
-      } else {
-        handleLogout()
-      }
+      dispatch(checkLogin(user))
     } else {
       handleLogout()
     }
@@ -72,8 +62,6 @@ const App = () => {
       }
       {user === null
         ? <LoginForm
-          user={user}
-          setUser={(user) => setUser(user)}
           idleTimeout={idleTimeout}
         />
         : <div>

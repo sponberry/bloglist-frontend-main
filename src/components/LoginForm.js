@@ -1,10 +1,9 @@
 import React, { useState } from "react"
-import loginService from "../services/login"
-import blogService from "../services/blogs"
 import { useDispatch } from "react-redux"
 import { messageChange, messageClear } from "../reducers/notificationReducer"
+import { login } from "../reducers/userReducer"
 
-const LoginForm = ({ setUser, idleTimeout }) => {
+const LoginForm = ({ idleTimeout }) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
@@ -13,16 +12,9 @@ const LoginForm = ({ setUser, idleTimeout }) => {
   const handleLogin = async event => {
     event.preventDefault()
     try {
-      const user = await loginService.login({
-        username, password
-      })
-      window.localStorage.setItem(
-        "loggedInUser", JSON.stringify(user)
-      )
+      dispatch(login({ username, password }))
       setPassword("")
       setUsername("")
-      blogService.setToken(user.token)
-      setUser(user)
 
       dispatch(messageClear())
       idleTimeout()
