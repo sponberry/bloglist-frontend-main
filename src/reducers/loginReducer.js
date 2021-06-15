@@ -1,7 +1,7 @@
 import loginService from "../services/login"
 import blogService from "../services/blogs"
 
-const userReducer = (state=null, action) => {
+const loginReducer = (state=null, action) => {
   switch (action.type) {
   case "LOGIN":
     return action.user
@@ -52,4 +52,4 @@ export const login =(credentialsObject) => {
   }
 }
 
-export default userReducer
+export default loginReducer
