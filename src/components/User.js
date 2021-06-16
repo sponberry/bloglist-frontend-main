@@ -1,4 +1,6 @@
 import React from "react"
+import { Button } from "@material-ui/core"
+import { Link } from "react-router-dom"
 
 const User = ({ userToView }) => {
   if (!userToView)
@@ -12,7 +14,9 @@ const User = ({ userToView }) => {
       <ul>
         {userToView.blogs.map(blog => (
           <li key={blog.id}>
-            {blog.title}
+            <Button color="inherit" component={Link} to={`/blogs/${blog.id}`}>
+              {blog.title}
+            </Button>
           </li>
         ))}
       </ul>

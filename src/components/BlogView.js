@@ -1,10 +1,11 @@
-import React from "react"
+import React, { useState } from "react"
 import { useDispatch } from "react-redux"
-import { remove, addLike } from "../reducers/blogReducer"
+import { remove, addLike, addComment } from "../reducers/blogReducer"
 import { messageChange } from "../reducers/notificationReducer"
 //import { Button } from "@material-ui/core"
 
 const BlogView = ({ blog, user }) => {
+  const [ comment, setComment ] = useState("")
   const dispatch = useDispatch()
 
   const likePost = async (blog) => {
@@ -30,6 +31,17 @@ const BlogView = ({ blog, user }) => {
         )
       }
     }
+  }
+
+  const makeComment = async (e) => {
+    e.preventDefault()
+    try {
+      dispatch(addComment(comment, blog))
+    } catch (exception) {
+      dispatch(
+        messageChange(`${blog.title} was already removed from server`, 5)
+      )}
+    setComment("")
   }
 
   const buttonVisibility = (blogCreatorId) => (
@@ -58,6 +70,20 @@ const BlogView = ({ blog, user }) => {
       <button style={buttonVisibility(blog.user.id)} onClick={() => removeBlog(blog)}>
         remove
       </button>
+      <h4>comments</h4>
+      {blog.comments
+        ? <ul>
+          {blog.comments.map(comment => (
+            <li key={comment}>{comment}</li>
+          ))}
+        </ul>
+        : <p>no comments yet</p>
+      }
+      <h4>add a new comment</h4>
+      <form onSubmit={(e) => makeComment(e)}>
+        <input type="text" value={comment} onChange={({ target }) => setComment(target.value)} />
+        <button type="submit">comment</button>
+      </form>
     </div>
   )
 }
