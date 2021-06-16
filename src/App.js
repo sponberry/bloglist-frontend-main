@@ -5,16 +5,14 @@ import BlogForm from "./components/BlogForm"
 import ErrorMessage from "./components/ErrorMessage"
 import Togglable from "./components/Togglable"
 import Users from "./components/Users"
+import User from "./components/User"
+import BlogView from "./components/BlogView"
 import { useDispatch, useSelector } from "react-redux"
 import { messageChange } from "./reducers/notificationReducer"
 import { initializeBlogs, sortBlogs } from "./reducers/blogReducer"
+import { initializeUsers } from "./reducers/usersReducer"
 import { checkLogin, logout } from "./reducers/loginReducer"
-import {
-  Route,
-  Link,
-  Switch,
-  // useRouteMatch
-} from "react-router-dom"
+import { Route, Link, Switch, useRouteMatch } from "react-router-dom"
 import { Container, AppBar, Toolbar, IconButton, Button } from "@material-ui/core"
 
 import "./styles/app.css"
@@ -23,12 +21,27 @@ const App = () => {
   let notification = useSelector(state => state.notification)
   let blogs = useSelector(state => state.blogs)
   let user = useSelector(state => state.user)
+  let users = useSelector(state => state.usersView)
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(initializeBlogs())
     dispatch(sortBlogs())
+    dispatch(initializeUsers())
   }, [])
+
+  const clickedUser = useRouteMatch("/users/:id")
+  const userToView = clickedUser
+    ? users.find(user => user.id === clickedUser.params.id)
+    : null
+
+  const clickedBlog = useRouteMatch("/blogs/:id")
+  const blogToView = clickedBlog
+    ? blogs.find(blog => blog.id === clickedBlog.params.id)
+    : null
+  const author = blogToView
+    ? users.find(user => user.id === blogToView.user.id)
+    : null
 
   const handleLogout = () => {
     dispatch(logout())
@@ -95,6 +108,12 @@ const App = () => {
             </AppBar>
 
             <Switch>
+              <Route path="/blogs/:id">
+                <BlogView blog={blogToView} user={author} />
+              </Route>
+              <Route path="/users/:id">
+                <User userToView={userToView} />
+              </Route>
               <Route path="/users">
                 <Users />
               </Route>

@@ -1,6 +1,6 @@
-import React, { useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { initializeUsers } from "../reducers/usersReducer"
+import React from "react"
+import { useSelector } from "react-redux"
+import { Link } from "react-router-dom"
 import {
   TableContainer,
   Table,
@@ -11,12 +11,7 @@ import {
 } from "@material-ui/core"
 
 const Users = () => {
-  const dispatch = useDispatch()
   const users = useSelector(state => state.usersView)
-
-  useEffect(() => {
-    dispatch(initializeUsers())
-  }, [])
 
   return (
     <div>
@@ -33,7 +28,9 @@ const Users = () => {
             {users.map(user => (
               <TableRow key={user.id}>
                 <TableCell>
-                  {user.username}
+                  <Link to={`/users/${user.id}`}>
+                    {user.name}
+                  </Link>
                 </TableCell>
                 <TableCell>
                   {user.blogs.length}
