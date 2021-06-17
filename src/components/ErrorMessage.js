@@ -1,23 +1,19 @@
 import React from "react"
 import PropTypes from "prop-types"
+import { Alert } from "@material-ui/lab"
 
 const ErrorMessage = ({ message }) => {
   ErrorMessage.propTypes = {
     message: PropTypes.string.isRequired
   }
 
+  // any message that begins with Error will be styled red
   const toCheck = message.substring(0, 5)
-  const redClass = {
-    "color": "red"
-  }
-  const greenClass = {
-    "color" : "green"
-  }
 
   return(
-    <div style={toCheck === "Error" ? redClass : greenClass} className="notification">
+    <Alert severity={toCheck === "Error" ? "error" : "success"}>
       {message}
-    </div>
+    </Alert>
   )
 }
 

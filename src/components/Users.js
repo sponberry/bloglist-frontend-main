@@ -13,13 +13,24 @@ import {
 const Users = () => {
   const users = useSelector(state => state.usersView)
 
+
+  const tableStyles =  {
+    backgroundColor: "#c9cdf2",
+    padding: "1rem 1.5rem 1.5rem",
+    "width":800,
+    "&:hover": {
+      backgroundColor: "#aab0e0",
+    }
+  }
+
+
   return (
     <div>
-      <h2>Users</h2>
-      <TableContainer component={Paper} style={{ "width":800 }}>
+      <h2 className="page-header">Users</h2>
+      <TableContainer component={Paper} style={tableStyles} color="inherit ">
         <Table>
           <TableBody>
-            <TableRow>
+            <TableRow style={{ margin: 50 }}>
               <TableCell></TableCell>
               <TableCell style={{ "fontWeight": 800 }}>
                 blogs created

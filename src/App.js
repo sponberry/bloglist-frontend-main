@@ -1,21 +1,21 @@
-import React, { useEffect, useRef } from "react"
-import Blog from "./components/Blog"
+import React, { useEffect } from "react"
 import LoginForm from "./components/LoginForm"
-import BlogForm from "./components/BlogForm"
 import ErrorMessage from "./components/ErrorMessage"
-import Togglable from "./components/Togglable"
 import Users from "./components/Users"
 import User from "./components/User"
 import BlogView from "./components/BlogView"
+import Navbar from "./components/Navbar"
+import Home from "./components/Home"
 import { useDispatch, useSelector } from "react-redux"
 import { messageChange } from "./reducers/notificationReducer"
 import { initializeBlogs, sortBlogs } from "./reducers/blogReducer"
 import { initializeUsers } from "./reducers/usersReducer"
 import { checkLogin, logout } from "./reducers/loginReducer"
-import { Route, Link, Switch, useRouteMatch } from "react-router-dom"
-import { Container, AppBar, Toolbar, IconButton, Button } from "@material-ui/core"
+import { Route, Switch, useRouteMatch } from "react-router-dom"
+import { Container, ThemeProvider } from "@material-ui/core"
 
 import "./styles/app.css"
+import theme from "./styles/theme"
 
 const App = () => {
   let notification = useSelector(state => state.notification)
@@ -28,7 +28,7 @@ const App = () => {
     dispatch(initializeBlogs())
     dispatch(sortBlogs())
     dispatch(initializeUsers())
-  }, [])
+  }, [blogs.length])
 
   const clickedUser = useRouteMatch("/users/:id")
   const userToView = clickedUser
@@ -51,7 +51,9 @@ const App = () => {
   useEffect(async () => {
     let mounted = true
     const userJSONData = window.localStorage.getItem("loggedInUser")
-    if (userJSONData && mounted) {
+    const userLoginTime = window.localStorage.getItem("loginTime")
+    const now = new Date()
+    if (userJSONData && mounted && userLoginTime && Number(userLoginTime) === now.getHours()) {
       const user = JSON.parse(userJSONData)
       dispatch(checkLogin(user))
     } else {
@@ -73,64 +75,40 @@ const App = () => {
     }
   }
 
-  const blogFormRef = useRef()
-
   return (
-    <Container>
-      <div>
-        {notification !== null
-          ? <ErrorMessage message={notification} />
-          : <div></div>
-        }
-        {user === null
-          ? <LoginForm
-            idleTimeout={idleTimeout}
-          />
-          : <div>
-            <AppBar position="static">
-              <Toolbar>
-                <IconButton edge="start" color="inherit" aria-label="menu">
-                </IconButton>
-                <Button color="inherit" component={Link} to="/">
-                  Home
-                </Button>
-                <Button color="inherit" component={Link} to="/users">
-                  Users
-                </Button>
-                <Button variant="contained" color="secondary" onClick={handleLogout} style={{ "marginRight": 20 }}>
-                  LOGOUT
-                </Button>
-                {user
-                  ? <p>{user.name} logged in</p>
-                  : <p></p>
-                }
-              </Toolbar>
-            </AppBar>
+    <ThemeProvider theme={theme} >
+      <Container>
+        <div>
+          {notification !== null
+            ? <ErrorMessage message={notification} />
+            : <div></div>
+          }
+          {user === null
+            ? <LoginForm
+              idleTimeout={idleTimeout}
+            />
+            : <div>
+              <Navbar handleLogout={handleLogout} />
 
-            <Switch>
-              <Route path="/blogs/:id">
-                <BlogView blog={blogToView} user={author} />
-              </Route>
-              <Route path="/users/:id">
-                <User userToView={userToView} />
-              </Route>
-              <Route path="/users">
-                <Users />
-              </Route>
-              <Route path="/">
-                <h2>Blogs</h2>
-                {blogs.map(blog =>
-                  <Blog key={blog.id} blog={blog} user={user} />
-                )}
-                <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
-                  <BlogForm blogFormRef={blogFormRef} />
-                </Togglable>
-              </Route>
-            </Switch>
-          </div>
-        }
-      </div>
-    </Container>
+              <Switch>
+                <Route path="/blogs/:id">
+                  <BlogView blog={blogToView} user={author} />
+                </Route>
+                <Route path="/users/:id">
+                  <User userToView={userToView} />
+                </Route>
+                <Route path="/users">
+                  <Users />
+                </Route>
+                <Route path="/">
+                  <Home />
+                </Route>
+              </Switch>
+            </div>
+          }
+        </div>
+      </Container>
+    </ThemeProvider>
   )
 }
 

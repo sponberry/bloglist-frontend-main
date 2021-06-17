@@ -42,7 +42,11 @@ export const login =(credentialsObject) => {
   return async dispatch => {
     const user = await loginService.login(credentialsObject)
     window.localStorage.setItem(
-      "loggedInUser", JSON.stringify(user)
+      "loggedInUser", JSON.stringify(user),
+    )
+    const timeNow = new Date()
+    window.localStorage.setItem(
+      "loginTime", timeNow.getHours()
     )
     blogService.setToken(user.token)
     dispatch({

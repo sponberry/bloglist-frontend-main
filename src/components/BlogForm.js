@@ -1,12 +1,14 @@
-import React, { useState } from "react"
+import React from "react"
 import { useDispatch } from "react-redux"
 import { messageChange } from "../reducers/notificationReducer"
 import { addNew } from "../reducers/blogReducer"
+import { Button, TextField } from "@material-ui/core"
+import { useField } from "../hooks"
 
 const BlogForm = ({ blogFormRef }) => {
-  const [newTitle, setNewTitle] = useState("")
-  const [newAuthor, setNewAuthor] = useState("")
-  const [newUrl, setNewUrl] = useState("")
+  const [titleReset, title] = useField()
+  const [authorReset, author] = useField()
+  const [urlReset, url] = useField()
 
   const dispatch = useDispatch()
 
@@ -25,13 +27,13 @@ const BlogForm = ({ blogFormRef }) => {
   const createBlog = event => {
     event.preventDefault()
     newBlog({
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl
+      title: title.value,
+      author: author.value,
+      url: url.value
     })
-    setNewTitle("")
-    setNewAuthor("")
-    setNewUrl("")
+    titleReset()
+    authorReset()
+    urlReset()
   }
 
   return (
@@ -39,36 +41,24 @@ const BlogForm = ({ blogFormRef }) => {
       <h2>create new</h2>
       <form onSubmit={createBlog}>
         <div>
-          <label htmlFor="title">title:</label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            value={newTitle}
-            onChange={({ target }) => setNewTitle(target.value)}
+          <TextField
+            label="title"
+            style={{ marginRight: 20 }}
+            {...title}
+          />
+
+          <TextField
+            label="author"
+            {...author}
           />
         </div>
         <div>
-          <label htmlFor="author">author:</label>
-          <input
-            id="author"
-            name="author"
-            type="text"
-            value={newAuthor}
-            onChange={({ target }) => setNewAuthor(target.value)}
+          <TextField
+            label="url"
+            {...url}
           />
         </div>
-        <div>
-          <label htmlFor="url">url:</label>
-          <input
-            id="url"
-            name="url"
-            type="text"
-            value={newUrl}
-            onChange={({ target }) => setNewUrl(target.value)}
-          />
-        </div>
-        <button id="submit" type="submit">create</button>
+        <Button color="primary" id="submit" type="submit" style={{ marginTop: 10 }}>create</Button>
       </form>
     </div>
   )

@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { useDispatch } from "react-redux"
 import { messageChange, messageClear } from "../reducers/notificationReducer"
 import { login } from "../reducers/loginReducer"
+import { TextField, Button } from "@material-ui/core"
 
 const LoginForm = ({ idleTimeout }) => {
   const [username, setUsername] = useState("")
@@ -27,26 +28,21 @@ const LoginForm = ({ idleTimeout }) => {
     <form onSubmit={handleLogin}>
       <h2>Log in to application</h2>
       <div>
-        <label htmlFor="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
+        <TextField
+          label="username"
           value={username}
           onChange={({ target }) => setUsername(target.value)}
         />
       </div>
       <div>
-        <label htmlFor="password">Password</label>
-        <input
+        <TextField
           type="password"
-          id="password"
-          name="password"
+          label="password"
           value={password}
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type="submit">login</button>
+      <Button color="default" type="submit" style={{ marginTop: 10 }}>login</Button>
     </form>
   )
 }

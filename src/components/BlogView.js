@@ -1,12 +1,15 @@
-import React, { useState } from "react"
+import React from "react"
 import { useDispatch } from "react-redux"
 import { remove, addLike, addComment } from "../reducers/blogReducer"
 import { messageChange } from "../reducers/notificationReducer"
-//import { Button } from "@material-ui/core"
+import { Button, TextField } from "@material-ui/core"
+import { useField } from "../hooks"
+import { useHistory } from "react-router-dom"
 
 const BlogView = ({ blog, user }) => {
-  const [ comment, setComment ] = useState("")
+  const [ resetComment, comment] = useField()
   const dispatch = useDispatch()
+  const history = useHistory()
 
   const likePost = async (blog) => {
     try {
@@ -25,6 +28,7 @@ const BlogView = ({ blog, user }) => {
         dispatch(
           messageChange(`Blog ${blogToDelete.title} deleted successfully!`, 5)
         )
+        history.push("/")
       } catch (exception) {
         dispatch(
           messageChange(`Error: unable to remove blog due to ${exception}`, 5)
@@ -36,12 +40,12 @@ const BlogView = ({ blog, user }) => {
   const makeComment = async (e) => {
     e.preventDefault()
     try {
-      dispatch(addComment(comment, blog))
+      dispatch(addComment(comment.value, blog))
     } catch (exception) {
       dispatch(
         messageChange(`${blog.title} was already removed from server`, 5)
       )}
-    setComment("")
+    resetComment()
   }
 
   const buttonVisibility = (blogCreatorId) => (
@@ -61,17 +65,17 @@ const BlogView = ({ blog, user }) => {
         <a href={blog.url} target="blank">{blog.url}</a>
       </p>
       <p className="likes">
-        {blog.likes}
-        <button onClick={() => likePost(blog)}>
+        {blog.likes} likes
+        <Button color="default" onClick={() => likePost(blog)}>
           like
-        </button>
+        </Button>
       </p>
       <p>added by {blog.author}</p>
-      <button style={buttonVisibility(blog.user.id)} onClick={() => removeBlog(blog)}>
+      <Button color="secondary" style={buttonVisibility(blog.user.id)} onClick={() => removeBlog(blog)}>
         remove
-      </button>
-      <h4>comments</h4>
-      {blog.comments
+      </Button>
+      <h3>comments</h3>
+      {blog.comments && blog.comments.length > 0
         ? <ul>
           {blog.comments.map(comment => (
             <li key={comment}>{comment}</li>
@@ -79,10 +83,12 @@ const BlogView = ({ blog, user }) => {
         </ul>
         : <p>no comments yet</p>
       }
-      <h4>add a new comment</h4>
+      <h3>add a new comment</h3>
       <form onSubmit={(e) => makeComment(e)}>
-        <input type="text" value={comment} onChange={({ target }) => setComment(target.value)} />
-        <button type="submit">comment</button>
+        <TextField label="write comment" {...comment} />
+        <Button color="secondary" type="submit" style={{ margin: 10 }}>
+          submit comment
+        </Button>
       </form>
     </div>
   )
